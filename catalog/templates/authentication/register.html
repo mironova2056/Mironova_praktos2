@@ -1,10 +1,14 @@
 {% extends 'catalog/base_generic.html' %}
 
 {% block content %}
-    <form class="form" method="post" enctype="multipart/form-data">
-        <span id="username-error" style="color: red; display: none;"></span>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button class="form__button" type="submit">Зарегистрироваться</button>
-    </form>
+<div class="container d-flex justify-content-center">
+    <div class="card p-5 shadow" style="max-width: 600px; background-color: #ffe6f2;">
+        <form method="post" enctype="multipart/form-data">
+            <span id="username-error" class="text-danger d-none"></span>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-pink w-100 mt-3">Зарегистрироваться</button>
+        </form>
+    </div>
+</div>
 {% endblock %}

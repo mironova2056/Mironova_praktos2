@@ -1,27 +1,31 @@
 {% extends 'catalog/base_generic.html' %}
 
 {% block content %}
+<div class="container d-flex justify-content-center">
+    <div class="card p-4 shadow" style="max-width: 400px; background-color: #ffe6f2;">
+        {% if user.is_authenticated %}
+            <h1 class="text-center text-pink">Вы уже авторизованы</h1>
+        {% else %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div class="mb-3">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                </div>
+                <button type="submit" class="btn btn-pink w-100">Вход</button>
+                <input type="hidden" name="next" value="{{ next }}">
+            </form>
+        {% endif %}
 
-  {% if user.is_authenticated %}
-    <h1>Вы уже авторизованны</h1>
-  {% else %}
-    <form class="form" method="post">
-      {% csrf_token %}
-      <div>
-          <p>{{ form.username.label_tag }}</p>
-          <p>{{ form.username }}</p>
-        <div>
-          <p>{{ form.password.label_tag }}</p>
-          <p>{{ form.password }}</p>
-        </div>
-      </div>
-      <button class="form__button" type="submit">Вход</button>
-      <input type="hidden" name="next" value="{{ next }}">
-    </form>
-  {% endif %}
-
-  {% if form.errors %}
-    <h1>Вы ввели неверные данные</h1>
-  {% endif %}
-
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger mt-3">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
