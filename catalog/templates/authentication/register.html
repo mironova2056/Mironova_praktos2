@@ -1,0 +1,10 @@
+{% extends 'catalog/base_generic.html' %}
+
+{% block content %}
+    <form class="form" method="post" enctype="multipart/form-data">
+        <span id="username-error" style="color: red; display: none;"></span>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="form__button" type="submit">Зарегистрироваться</button>
+    </form>
+{% endblock %}
