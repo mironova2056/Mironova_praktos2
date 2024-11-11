@@ -14,4 +14,6 @@ urlpatterns = [
     path('new/', views.create_application, name='create_application'),
     path('<int:pk>/', views.application_detail, name='application_detail'),
     path('application/<int:pk>/delete', views.delete_application, name='delete_application'),
+    path('application/<int:pk>/edit/', views.update_application, name='edit_application'),
+    path('application/<int:pk>/history/', views.application_history, name='application_history'),
 ]

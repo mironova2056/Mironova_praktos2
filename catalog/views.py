@@ -6,7 +6,7 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
-from .models import User, Application
+from .models import User, Application, ApplicationHistory
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
@@ -108,3 +108,22 @@ def delete_application(request, pk):
     else:
         messages.error(request, 'вы не можете удалять заявки, не принадлежащие вам')
     return redirect('catalog:profile')
+def update_application(request, pk):
+    application = get_object_or_404(Application, pk=pk)
+    if request.method == 'POST':
+        form = ApplicationForm(request.POST, request.FILES, instance=application)
+        if form.is_valid():
+            form.save()
+            ApplicationHistory.objects.create(
+                application=application,
+                changed_by=request.user,
+                change_description=f"Заявка обновлена: {form.cleaned_data['title']}"
+            )
+            return redirect('catalog:application_detail', pk=application.pk)
+    else:
+        form = ApplicationForm(instance=application)
+    return render(request, 'catalog/application_form.html', {'form': form})
+def application_history(request, pk):
+    application = get_object_or_404(Application, pk=pk)
+    history = application.history.all()
+    return render(request, 'catalog/application_history.html', {'application': application, 'history': history})

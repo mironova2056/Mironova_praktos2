@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from PIL import Image
-
+from django.contrib.auth import get_user_model
 
 
 # Create your models here.
@@ -33,22 +33,9 @@ def validate_image(image):
             raise ValidationError('Формат файла может быть: jpg, jpeg, png, bmp ', code='invalid_mime_type')
     else:
         raise ValidationError('Не удалось определить формат файла', code='unknown_mime_type')
-
     file_size = image.size
     if file_size > 2 * 1024 * 1024:
         raise ValidationError('Размер файла не должен превышать 2 Мб', code='file_too_large')
-    try:
-        img = Image.open(image)
-        img.verify()
-        width, height = img.size
-        max_resolution = 2000
-        if width > max_resolution  or height > max_resolution:
-            raise ValidationError('Разрешение картинки не должно превышать 2000 рх по ширине или высоте',
-                                  code='resolution_too_large')
-    except Image.UnidentifiedImageError:
-        raise ValidationError('Загруженный файл не поддерживается', code='invalid_image')
-    except Exception as e:
-        raise ValidationError(f"Ошибка при обработке картинки {e}", code='processing_errr')
 
 class Category(models.Model):
     name = models.CharField(max_length=100, help_text='выберите категорию')
@@ -83,5 +70,14 @@ class Application(models.Model):
     def get_absolute_url(self):
         return reverse('application-detail', args=[str(self.id)])
     def display_category(self):
-        return self.category.name if self.category else 'Без категории'
+        return self.category.name if self.category else "Без категории"
     display_category.short_description = 'Category'
+
+User = get_user_model()
+class ApplicationHistory(models.Model):
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='history')
+    changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    change_timestamp = models.DateTimeField(auto_now_add=True)
+    change_description = models.TextField()
+    def __str__(self):
+        return f"Изменение {self.application.title} от {self.change_timestamp}"
