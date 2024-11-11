@@ -91,3 +91,6 @@ def create_application(request):
     else:
         form = ApplicationForm()
     return (request, 'catalog:create_application.html', {'form': form})
+def application_detail(request, pk):
+    application = get_object_or_404(Application, pk=pk)
+    return render(request, 'catalog/application_detail.html', {'application': application})
