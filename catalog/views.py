@@ -108,6 +108,10 @@ def delete_application(request, pk):
     else:
         messages.error(request, 'вы не можете удалять заявки, не принадлежащие вам')
     return redirect('catalog:profile')
+def application_history(request, pk):
+    application = get_object_or_404(Application, pk=pk)
+    history = application.history.all()
+    return render(request, 'catalog/application_history.html', {'application': application, 'history': history})
 def update_application(request, pk):
     application = get_object_or_404(Application, pk=pk)
     if request.method == 'POST':
@@ -123,7 +127,4 @@ def update_application(request, pk):
     else:
         form = ApplicationForm(instance=application)
     return render(request, 'catalog/application_form.html', {'form': form})
-def application_history(request, pk):
-    application = get_object_or_404(Application, pk=pk)
-    history = application.history.all()
-    return render(request, 'catalog/application_history.html', {'application': application, 'history': history})
+
