@@ -74,11 +74,12 @@ class Profile(LoginRequiredMixin, generic.DetailView):
         if status_filter:
             applications = Application.objects.filter(user = self.request.user, status = status_filter).order_by('-created_at')
         else:
-            applications = Application.objects.filter(user = self.request.user).order_by('-crated_at')
+            applications = Application.objects.filter(user = self.request.user).order_by('-created_at')
 
         context['applications'] = applications
         context['status_filter'] = status_filter
         return context
+
 
 def create_application(request):
     if request.method == 'POST':
@@ -90,7 +91,8 @@ def create_application(request):
             return redirect('catalog:profile')
     else:
         form = ApplicationForm()
-    return (request, 'catalog:create_application.html', {'form': form})
+
+    return render(request, 'catalog/create_application.html', {'form': form})
 def application_detail(request, pk):
     application = get_object_or_404(Application, pk=pk)
     return render(request, 'catalog/application_detail.html', {'application': application})

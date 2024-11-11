@@ -34,12 +34,11 @@
     </div>
 
      <form method="get" class="mb-4">
-        <label for="status" class="form-label">Фильтр по статусу:</label>
+        <label for="status" class="form-label">Статус:</label>
         <select id="status" name="status" class="form-select" onchange="this.form.submit()">
-            <option value="" {% if status_filter =='' %}selected{% endif %}>Все</option>
-            <option value="n" {% if status_filter =='n' %}selected{% endif %}>Новая</option>
-            <option value="a" {% if status_filter =='a' %}selected{% endif %}>Принято в работу</option>
-            <option value="s" {% if status_filter =='s' %}selected{% endif %}>Выполнено</option>
+            <option value="new" {% if status_filter == "new" %}selected{% endif %}>Новая</option>
+            <option value="active" {% if status_filter == "active" %}selected{% endif %}>Активная</option>
+            <option value="done" {% if status_filter == "done" %}selected{% endif %}>Выполнена</option>
         </select>
     </form>
 
