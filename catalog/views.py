@@ -94,3 +94,15 @@ def create_application(request):
 def application_detail(request, pk):
     application = get_object_or_404(Application, pk=pk)
     return render(request, 'catalog/application_detail.html', {'application': application})
+@login_required
+def delete_application(request, pk):
+    application = get_object_or_404(Application, pk=pk)
+    if application.user == request.user:
+        if application.status == 'n':
+            application.delete()
+            messages.success(request, 'Заявка успешно удалена')
+        else:
+            messages.error(request, 'Вы можете удалять заявки только со статусом "новая" ')
+    else:
+        messages.error(request, 'вы не можете удалять заявки, не принадлежащие вам')
+    return redirect('catalog:profile')
