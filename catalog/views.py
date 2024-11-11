@@ -1,13 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
-from .forms import RegisterForm
-from django.urls import reverse_lazy
+from .forms import RegisterForm, ApplicationForm
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth import logout
-from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
-from .models import User
+from .models import User, Application
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+
 
 def check_username(request):
     username = request.GET.get('username', None)
@@ -59,3 +61,33 @@ class CustomLoginView(LoginView):
             pass
         messages.error(self.request, 'Неправильный логин или пароль.')
         return super().form_invalid(form)
+class Profile(LoginRequiredMixin, generic.DetailView):
+    model = User
+    template_name = 'catalog/profile.html'
+    context_object_name = 'profile_user'
+
+    def get_object(self):
+        return self.request.user
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        status_filter = self.request.GET.get('status', '')
+        if status_filter:
+            applications = Application.objects.filter(user = self.request.user, status = status_filter).order_by('-created_at')
+        else:
+            applications = Application.objects.filter(user = self.request.user).order_by('-crated_at')
+
+        context['applications'] = applications
+        context['status_filter'] = status_filter
+        return context
+
+def create_application(request):
+    if request.method == 'POST':
+        form = ApplicationForm(request.POST, request.FILES)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.user = request.user
+            application.save()
+            return redirect('catalog:profile')
+    else:
+        form = ApplicationForm()
+    return (request, 'catalog:create_application.html', {'form': form})
