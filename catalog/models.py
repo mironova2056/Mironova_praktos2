@@ -62,7 +62,7 @@ class Application(models.Model):
         ('done','выполнено'),
     )
     status = models.CharField(max_length=20, choices=LOAN_STATUS,
-                              default='n', verbose_name='статус заявки',
+                              default='new', verbose_name='статус заявки',
                               help_text='статус заявки')
     created_at = models.DateTimeField(auto_now_add=True, help_text='дата и время создания')
     def __str__(self):

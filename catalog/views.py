@@ -100,7 +100,7 @@ def application_detail(request, pk):
 def delete_application(request, pk):
     application = get_object_or_404(Application, pk=pk)
     if application.user == request.user:
-        if application.status == 'n':
+        if application.status == 'new':
             application.delete()
             messages.success(request, 'Заявка успешно удалена')
         else:
