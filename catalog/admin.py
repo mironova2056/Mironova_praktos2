@@ -4,7 +4,9 @@ from unicodedata import category
 from django.core.exceptions import ValidationError
 from django import forms
 from django.db import transaction
-
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+User = get_user_model()
 class ApplicationAdminForm(forms.ModelForm):
     comment = forms.CharField(
         required=False,
@@ -63,4 +65,11 @@ class ApplicationAdmin(admin.ModelAdmin):
                 obj.save()
 
 admin.site.register(Category)
+class UserAdmin(BaseUserAdmin):
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    list_filter = ('is_staff', 'is_superuser', 'is_active')
 
+    list_per_page = 3
+
+admin.site.register(User, UserAdmin)
